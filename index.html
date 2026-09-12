@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vanguard One - Member Workspace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    body {
+      background-color: #070b14;
+      background-image: radial-gradient(at top center, rgba(30, 58, 138, 0.28) 0%, transparent 70%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+    .glass-box {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-input {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+    .glass-input:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+    .dock-nav {
+      background: rgba(11, 18, 33, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+    }
+    .dock-tab {
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+    .dock-tab.active {
+      color: #38bdf8;
+    }
+    .dock-tab.active .dock-icon-wrap {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.35);
+      transform: translateY(-2px);
+    }
+    #splash-screen {
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .logo-glow {
+      filter: drop-shadow(0 0 18px rgba(59, 130, 246, 0.7));
+    }
+    .banner-glow {
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.15);
+    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 999px; }
+  </style>
+</head>
+<body class="selection:bg-blue-600 selection:text-white pb-28">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-between py-12 px-4 bg-[#070b14]">
+    <div></div>
+    <div class="text-center space-y-4 animate-pulse">
+      <div class="w-24 h-24 mx-auto logo-glow">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full">
+          <polygon points="50,10 90,32 90,68 50,90 10,68 10,32" stroke="url(#blueGrad)" stroke-width="4" fill="rgba(30, 58, 138, 0.25)" />
+          <polygon points="50,22 80,40 80,60 50,78 20,60 20,40" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+          <path d="M50 32 L68 62 H32 Z" fill="url(#cyanGrad)" />
+          <defs>
+            <linearGradient id="blueGrad" x1="0" y1="0" x2="100" y2="100">
+              <stop offset="0%" stop-color="#60a5fa" />
+              <stop offset="100%" stop-color="#4f46e5" />
+            </linearGradient>
+            <linearGradient id="cyanGrad" x1="50" y1="32" x2="50" y2="62">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#3b82f6" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-black tracking-widest text-white uppercase">VANGUARD ONE</h1>
+        <p class="text-[11px] tracking-widest text-blue-400 font-bold uppercase mt-1">Associate Field Portal</p>
+      </div>
+    </div>
+    <div class="text-center">
+      <span class="inline-block px-4 py-1.5 rounded-full glass-box border border-blue-500/30 text-xs font-mono font-semibold tracking-wider text-blue-300">
+        Designed by <strong class="text-white font-bold tracking-wide">Puneet Kumar</strong>
+      </span>
+    </div>
+  </div>
+
+  <!-- MEMBER LOGIN -->
+  <div id="login-section" class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass-box w-full max-w-sm rounded-2xl p-7 relative">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 mx-auto mb-2 logo-glow">
+          <svg viewBox="0 0 100 100" fill="none" class="w-full h-full">
+            <polygon points="50,10 90,32 90,68 50,90 10,68 10,32" stroke="#60a5fa" stroke-width="5" fill="rgba(30, 58, 138, 0.3)" />
+            <path d="M50 32 L68 62 H32 Z" fill="#38bdf8" />
+          </svg>
+        </div>
+        <h1 class="text-xl font-black text-white uppercase tracking-wider">VANGUARD ONE</h1>
+        <p class="text-xs text-slate-400 mt-1">Member Workspace Login</p>
+      </div>
+
+      <div id="login-error" class="hidden mb-3 p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs text-center font-medium"></div>
+
+      <form id="member-login-form" class="space-y-3.5 text-xs">
+        <div>
+          <label class="font-bold text-slate-400 block mb-1 uppercase">Member User ID</label>
+          <input type="text" id="login-username" required placeholder="User ID daalein" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
+        </div>
+        <div>
+          <label class="font-bold text-slate-400 block mb-1 uppercase">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition mt-2">
+          Workspace Me Login Karein
+        </button>
+      </form>
+
+      <div class="text-center mt-6 pt-3 border-t border-white/5">
+        <p class="text-[10px] text-slate-500 font-mono">Engineered by Puneet Kumar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBER DASHBOARD -->
+  <div id="dashboard-section" class="hidden">
+    <header class="sticky top-0 z-30 glass-box border-b border-white/5 px-4 sm:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-7 h-7 logo-glow shrink-0">
+          <svg viewBox="0 0 100 100" fill="none" class="w-full h-full">
+            <polygon points="50,10 90,32 90,68 50,90 10,68 10,32" stroke="#60a5fa" stroke-width="6" fill="rgba(30, 58, 138, 0.4)" />
+            <path d="M50 32 L68 62 H32 Z" fill="#38bdf8" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-sm font-black text-white tracking-wide uppercase">Vanguard One</h1>
+          <p class="text-[11px] text-slate-400">Associate: <span id="header-user-name" class="text-blue-400 font-bold"></span></p>
+        </div>
+      </div>
+      <button onclick="memberLogout()" class="px-3 py-1.5 rounded-xl glass-box hover:bg-red-500/10 text-slate-300 hover:text-red-400 text-xs transition flex items-center gap-1.5">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Logout
+      </button>
+    </header>
+
+    <!-- MOTIVATION BANNER -->
+    <div class="max-w-md mx-auto px-4 pt-4">
+      <div class="glass-box p-4 rounded-2xl border-2 border-amber-500/30 banner-glow bg-gradient-to-r from-amber-500/10 via-slate-900/40 to-blue-500/10 flex items-center gap-3">
+        <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+          <i data-lucide="flame" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[9px] font-black uppercase tracking-widest text-amber-400">Commander Directive:</div>
+          <h2 id="motivation-text-display" class="text-xs sm:text-sm font-black text-white leading-snug"></h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARGET BROADCAST CARD -->
+    <div id="member-broadcast-target-card" class="hidden max-w-md mx-auto px-4 pt-3">
+      <div class="glass-box p-3 rounded-xl border border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 to-transparent flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></div>
+          <div>
+            <span class="text-[9px] font-bold uppercase text-emerald-400 block tracking-wider">Broadcast Team Target:</span>
+            <p id="member-broadcast-target-text" class="text-xs font-black text-white"></p>
+          </div>
+        </div>
+        <span class="font-mono text-[10px] font-black text-emerald-300 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- TABS CONTENT -->
+    <main class="max-w-md mx-auto px-4 pt-4 space-y-4 text-xs">
+      
+      <!-- WORKSPACE TAB -->
+      <div id="tab-content-workspace" class="space-y-4">
+        <div class="glass-box p-4 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <img id="member-disp-photo" src="https://via.placeholder.com/80" class="w-11 h-11 rounded-xl object-cover border border-white/10" />
+            <div>
+              <h2 id="member-disp-name" class="font-bold text-white text-sm"></h2>
+              <p class="text-slate-400 text-[11px]"><span id="member-disp-city"></span> | <span id="member-disp-user" class="text-blue-400 font-mono"></span></p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 font-bold block uppercase">Approved BV</span>
+            <span id="member-disp-bv" class="text-sm font-black text-emerald-400 font-mono">0 BV</span>
+          </div>
+        </div>
+
+        <div id="member-gps-box">
+          <button onclick="memberPunchShowPlan()" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-600/25">
+            <i data-lucide="map-pin" class="w-4 h-4"></i> Show Plan Punch (GPS Verify)
+          </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="glass-box p-2.5 rounded-xl"><span class="text-[10px] text-slate-400 block uppercase">Target</span><span id="member-disp-target" class="font-bold text-white">0</span></div>
+          <div class="glass-box p-2.5 rounded-xl"><span class="text-[10px] text-purple-400 block uppercase">Plans</span><span id="member-disp-plans" class="font-bold text-purple-400">0</span></div>
+          <div class="glass-box p-2.5 rounded-xl"><span class="text-[10px] text-amber-400 block uppercase">DD Cash</span><span id="member-disp-dd" class="font-bold text-amber-400">₹0</span></div>
+        </div>
+
+        <div class="glass-box p-3.5 rounded-xl space-y-2">
+          <span class="font-bold text-slate-400 text-[10px] block uppercase">Daily Action Checklist</span>
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <label class="flex items-center gap-1.5"><input type="checkbox" class="accent-blue-600" /> 5 Calls Done</label>
+            <label class="flex items-center gap-1.5"><input type="checkbox" class="accent-blue-600" /> 1 Plan Shown</label>
+            <label class="flex items-center gap-1.5"><input type="checkbox" class="accent-blue-600" /> Follow-up Done</label>
+            <label class="flex items-center gap-1.5"><input type="checkbox" class="accent-blue-600" /> Status Updated</label>
+          </div>
+        </div>
+
+        <div class="glass-box p-4 rounded-xl space-y-2.5">
+          <span class="font-bold text-blue-400 text-[10px] block uppercase">Follow-up & DD Report</span>
+          <form id="member-daily-form" class="space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="mem-input-followups" required min="0" placeholder="Follow-ups" class="glass-input p-2 rounded-xl" />
+              <input type="number" id="mem-input-dd" required min="0" placeholder="DD Cash (₹)" class="glass-input p-2 rounded-xl" />
+            </div>
+            <textarea id="mem-input-notes" rows="1" placeholder="Summary notes..." class="glass-input w-full p-2 rounded-xl"></textarea>
+            <div class="flex gap-2">
+              <button type="submit" class="flex-1 py-2 bg-blue-600 text-white font-bold rounded-xl">Save Report</button>
+              <button type="button" onclick="memberShareReportWhatsApp()" class="px-3 py-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold flex items-center gap-1">
+                <i data-lucide="share-2" class="w-3.5 h-3.5"></i> WhatsApp
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div id="member-noprogress-box" class="glass-box p-3.5 rounded-xl space-y-2 border-red-500/20">
+          <span class="font-bold text-red-400 text-[10px] block uppercase">Aaj Kaam Nahi Hua? (Reason)</span>
+          <form id="member-noprogress-form" class="space-y-2">
+            <select id="np-reason" class="glass-input w-full p-2 rounded-xl">
+              <option value="Health Issue">Health Issue / Beemar</option>
+              <option value="Market Band">Market / Area Band</option>
+              <option value="Client Postponed">Client Postponed</option>
+              <option value="Emergency">Family Emergency</option>
+            </select>
+            <input type="text" id="np-detail" required placeholder="Detail wajeh..." class="glass-input w-full p-2 rounded-xl" />
+            <button type="submit" class="px-3 py-1.5 bg-red-600/20 text-red-300 rounded-xl font-bold">Submit Reason</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- PROSPECT DIARY TAB -->
+      <div id="tab-content-diary" class="hidden space-y-3">
+        <div class="glass-box p-3.5 rounded-xl space-y-2">
+          <span class="font-bold text-amber-400 text-[10px] block uppercase">Pocket Prospect Diary (+ Lead)</span>
+          <form id="add-prospect-form" class="space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="lead-name" required placeholder="Naam" class="glass-input p-2 rounded-xl" />
+              <input type="tel" id="lead-phone" required placeholder="Phone" class="glass-input p-2 rounded-xl" />
+            </div>
+            <input type="text" id="lead-city" placeholder="Area" class="glass-input w-full p-2 rounded-xl" />
+            <button type="submit" class="w-full py-2 bg-amber-600 text-white font-bold rounded-xl">+ Add Lead</button>
+          </form>
+        </div>
+        <div id="member-prospects-list" class="space-y-2"></div>
+      </div>
+
+      <!-- BV SALES TAB -->
+      <div id="tab-content-sales" class="hidden space-y-3">
+        <div id="member-sale-box" class="glass-box p-4 rounded-xl space-y-2.5">
+          <span class="font-bold text-emerald-400 text-[10px] block uppercase">Product Sale & BV Entry</span>
+          <form id="member-sale-form" class="space-y-2">
+            <input type="text" id="sale-product" required placeholder="Product Name" class="glass-input w-full p-2 rounded-xl" />
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="sale-qty" required min="1" placeholder="Quantity" class="glass-input w-full p-2 rounded-xl" />
+              <input type="number" id="sale-bv" required min="1" placeholder="Total BV" class="glass-input w-full p-2 rounded-xl text-emerald-400 font-bold" />
+            </div>
+            <button type="submit" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl">Submit for Approval</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TOOLKIT TAB -->
+      <div id="tab-content-toolkit" class="hidden space-y-3">
+        <div id="visiting-card-canvas" class="glass-box p-4 rounded-2xl text-center space-y-2">
+          <img id="vc-photo" src="https://via.placeholder.com/80" class="w-16 h-16 rounded-xl object-cover border border-white/10 mx-auto" />
+          <h4 id="vc-name" class="font-bold text-white text-sm"></h4>
+          <p id="vc-phone-city" class="text-slate-400 text-[11px]"></p>
+        </div>
+        <button onclick="exportVisitingCardJPG()" class="w-full py-2 bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-1.5">
+          <i data-lucide="image" class="w-3.5 h-3.5"></i> Download Visiting Card JPG
+        </button>
+        <div class="glass-box p-3 rounded-xl space-y-1.5 text-[11px]">
+          <span class="font-bold text-amber-400 block uppercase">Objection Handling</span>
+          <p><strong>"Paise nahi hain":</strong> "Sir isi liye toh hume samajhna hai taaki dikkat na rahe."</p>
+          <p><strong>"Time nahi hai":</strong> "Sir part-time rozana 1 ghanta dekar shuru karein."</p>
+        </div>
+      </div>
+
+      <!-- REPORTS TAB (OTP LOCKED) -->
+      <div id="tab-content-reports" class="hidden space-y-3">
+        <div class="glass-box p-4 rounded-xl space-y-3 text-center">
+          <span class="font-bold text-indigo-400 text-[10px] block uppercase">Reports Unlock Portal</span>
+          <div id="otp-lock-screen" class="space-y-2">
+            <button onclick="requestReportOTP()" class="px-3 py-2 bg-indigo-600 text-white font-bold rounded-xl">Request OTP from Admin</button>
+            <div id="otp-input-row" class="hidden flex justify-center gap-2 pt-2">
+              <input type="text" id="entered-otp" maxlength="6" placeholder="OTP" class="glass-input px-3 py-1.5 rounded-xl font-mono w-28 text-center" />
+              <button onclick="verifyReportOTP()" class="px-3 py-1.5 bg-emerald-600 text-white font-bold rounded-xl">Unlock</button>
+            </div>
+          </div>
+          <div id="otp-unlocked-screen" class="hidden text-left space-y-2">
+            <span class="font-bold text-white uppercase text-[10px]">Verified Plans Log:</span>
+            <div id="member-gps-logs-list" class="space-y-1 max-h-40 overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- DOCK NAV -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 dock-nav">
+      <div class="max-w-md mx-auto flex items-center justify-around px-2 py-2">
+        <button onclick="switchTab('workspace')" id="dock-tab-workspace" class="dock-tab flex-1 flex flex-col items-center gap-1 active">
+          <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition"><i data-lucide="layout-grid" class="w-4 h-4"></i></div>
+          <span class="text-[10px] font-bold tracking-tight">Work</span>
+        </button>
+        <button onclick="switchTab('diary')" id="dock-tab-diary" class="dock-tab flex-1 flex flex-col items-center gap-1">
+          <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition"><i data-lucide="book-open" class="w-4 h-4"></i></div>
+          <span class="text-[10px] font-bold tracking-tight">Diary</span>
+        </button>
+        <button onclick="switchTab('sales')" id="dock-tab-sales" class="dock-tab flex-1 flex flex-col items-center gap-1">
+          <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition"><i data-lucide="shopping-bag" class="w-4 h-4"></i></div>
+          <span class="text-[10px] font-bold tracking-tight">BV Sales</span>
+        </button>
+        <button onclick="switchTab('toolkit')" id="dock-tab-toolkit" class="dock-tab flex-1 flex flex-col items-center gap-1">
+          <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+          <span class="text-[10px] font-bold tracking-tight">Kit</span>
+        </button>
+        <button onclick="switchTab('reports')" id="dock-tab-reports" class="dock-tab flex-1 flex flex-col items-center gap-1">
+          <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition"><i data-lucide="lock" class="w-4 h-4"></i></div>
+          <span class="text-[10px] font-bold tracking-tight">Reports</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    function loadFreshDB() {
+      return {
+        users: JSON.parse(localStorage.getItem("hmt_users")) || [],
+        pendingBV: JSON.parse(localStorage.getItem("hmt_pending_bv")) || [],
+        config: JSON.parse(localStorage.getItem("hmt_config")) || {
+          motivation: "Aaj jo mehnat se nahi darega, wahi kal team ka sabse bada leader banega!",
+          broadcastTarget: "",
+          gpsEnabled: true,
+          bvEnabled: true,
+          otpEnabled: true,
+          noProgressEnabled: true,
+          activeOTP: null
+        }
+      };
+    }
+
+    let { users, pendingBV, config: systemConfig } = loadFreshDB();
+    let currentSession = JSON.parse(localStorage.getItem("hmt_member_session")) || null;
+
+    function getDeviceFingerprint() {
+      let devId = localStorage.getItem("hmt_dev_fingerprint");
+      if (!devId) {
+        devId = "DEV_" + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem("hmt_dev_fingerprint", devId);
+      }
+      return devId;
+    }
+
+    function saveDB() {
+      localStorage.setItem("hmt_users", JSON.stringify(users));
+      localStorage.setItem("hmt_pending_bv", JSON.stringify(pendingBV));
+      localStorage.setItem("hmt_config", JSON.stringify(systemConfig));
+    }
+
+    function initApp() {
+      setTimeout(() => {
+        const splash = document.getElementById("splash-screen");
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.style.display = 'none', 500);
+        }
+      }, 1600);
+
+      const db = loadFreshDB();
+      users = db.users;
+      systemConfig = db.config;
+
+      if (currentSession) {
+        const fresh = users.find(u => u.id === currentSession.id && u.role === "member");
+        if (fresh && fresh.status !== "Inactive") {
+          loadWorkspace(fresh);
+        } else {
+          memberLogout();
+        }
+      }
+      lucide.createIcons();
+    }
+
+    document.getElementById("member-login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const err = document.getElementById("login-error");
+      err.classList.add("hidden");
+
+      const db = loadFreshDB();
+      users = db.users;
+      systemConfig = db.config;
+
+      const u = document.getElementById("login-username").value.trim().toLowerCase();
+      const p = document.getElementById("login-password").value.trim();
+      const currentDev = getDeviceFingerprint();
+
+      const user = users.find(item => item.username.toLowerCase() === u && item.password === p && item.role === "member");
+      if (!user) {
+        err.textContent = "Galat Member ID ya Password! (Admin se apni ID banwayein)";
+        err.classList.remove("hidden");
+        return;
+      }
+      if (user.status === "Inactive") {
+        err.textContent = "Aapka account Blocked hai! Admin se sampark karein.";
+        err.classList.remove("hidden");
+        return;
+      }
+
+      // Device Lock
+      if (!user.boundDeviceId) {
+        user.boundDeviceId = currentDev;
+        saveDB();
+        loadWorkspace(user);
+        return;
+      }
+      if (user.boundDeviceId === currentDev) {
+        loadWorkspace(user);
+      } else {
+        err.textContent = "Device Mismatch: Dusre phone me login allow nahi hai! Admin se reset karwayein.";
+        err.classList.remove("hidden");
+      }
+    });
+
+    function loadWorkspace(user) {
+      currentSession = user;
+      localStorage.setItem("hmt_member_session", JSON.stringify(user));
+
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("dashboard-section").classList.remove("hidden");
+
+      document.getElementById("header-user-name").textContent = user.name;
+      document.getElementById("motivation-text-display").textContent = `"${systemConfig.motivation}"`;
+
+      const bCard = document.getElementById("member-broadcast-target-card");
+      if (systemConfig.broadcastTarget) {
+        bCard.classList.remove("hidden");
+        document.getElementById("member-broadcast-target-text").textContent = systemConfig.broadcastTarget;
+      } else {
+        bCard.classList.add("hidden");
+      }
+
+      document.getElementById("member-gps-box").style.display = systemConfig.gpsEnabled ? "block" : "none";
+      document.getElementById("member-sale-box").style.display = systemConfig.bvEnabled ? "block" : "none";
+      document.getElementById("member-noprogress-box").style.display = systemConfig.noProgressEnabled ? "block" : "none";
+
+      document.getElementById("member-disp-photo").src = user.photo || "https://via.placeholder.com/80";
+      document.getElementById("member-disp-name").textContent = user.name;
+      document.getElementById("member-disp-city").textContent = user.city;
+      document.getElementById("member-disp-user").textContent = user.username;
+      document.getElementById("member-disp-bv").textContent = (user.bv || 0) + " BV";
+      document.getElementById("member-disp-target").textContent = user.target || 0;
+      document.getElementById("member-disp-plans").textContent = user.todayPlans || 0;
+      document.getElementById("member-disp-dd").textContent = "₹" + (user.todayDD || 0).toLocaleString("en-IN");
+
+      document.getElementById("vc-photo").src = user.photo || "https://via.placeholder.com/80";
+      document.getElementById("vc-name").textContent = user.name;
+      document.getElementById("vc-phone-city").textContent = `${user.phone} | ${user.city}`;
+
+      renderProspects();
+      lucide.createIcons();
+    }
+
+    function memberLogout() {
+      localStorage.removeItem("hmt_member_session");
+      location.reload();
+    }
+
+    function switchTab(tab) {
+      ['workspace', 'diary', 'sales', 'toolkit', 'reports'].forEach(t => {
+        document.getElementById(`tab-content-${t}`).classList.add('hidden');
+        document.getElementById(`dock-tab-${t}`).classList.remove('active');
+      });
+      document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+      document.getElementById(`dock-tab-${tab}`).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById("member-daily-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = Number(document.getElementById("mem-input-followups").value) || 0;
+      const d = Number(document.getElementById("mem-input-dd").value) || 0;
+      const n = document.getElementById("mem-input-notes").value.trim();
+
+      users = users.map(u => u.id === currentSession.id ? { ...u, todayFollowups: f, todayDD: d, todayNotes: n, noProgressReason: null } : u);
+      currentSession.todayFollowups = f;
+      currentSession.todayDD = d;
+      currentSession.todayNotes = n;
+      saveDB();
+      loadWorkspace(currentSession);
+      alert("Daily Report save ho gayi!");
+    });
+
+    document.getElementById("member-noprogress-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const r = document.getElementById("np-reason").value;
+      const d = document.getElementById("np-detail").value;
+      users = users.map(u => u.id === currentSession.id ? { ...u, noProgressReason: r, noProgressDetail: d } : u);
+      currentSession.noProgressReason = r;
+      currentSession.noProgressDetail = d;
+      saveDB();
+      alert("Reason Admin ko report ho gaya!");
+    });
+
+    document.getElementById("add-prospect-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const lead = {
+        name: document.getElementById("lead-name").value.trim(),
+        phone: document.getElementById("lead-phone").value.trim(),
+        city: document.getElementById("lead-city").value.trim()
+      };
+      users = users.map(u => u.id === currentSession.id ? { ...u, prospects: [...(u.prospects || []), lead] } : u);
+      currentSession.prospects = [...(currentSession.prospects || []), lead];
+      saveDB();
+      document.getElementById("add-prospect-form").reset();
+      renderProspects();
+    });
+
+    document.getElementById("member-sale-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      pendingBV.push({
+        memberId: currentSession.id,
+        memberName: currentSession.name,
+        product: document.getElementById("sale-product").value.trim(),
+        qty: Number(document.getElementById("sale-qty").value) || 1,
+        bv: Number(document.getElementById("sale-bv").value) || 0
+      });
+      saveDB();
+      document.getElementById("member-sale-form").reset();
+      alert("Sale approval ke liye bhej di gayi!");
+    });
+
+    function memberPunchShowPlan() {
+      if (!navigator.geolocation) {
+        alert("GPS support nahi mila!");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude.toFixed(5);
+        const lon = pos.coords.longitude.toFixed(5);
+        const link = `https://maps.google.com/?q=${lat},${lon}`;
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const entry = { text: `Plan #${(currentSession.todayPlans || 0) + 1} punched at ${time}`, link, lat, lon };
+
+        users = users.map(u => u.id === currentSession.id ? {
+          ...u,
+          todayPlans: (u.todayPlans || 0) + 1,
+          gpsLogs: [...(u.gpsLogs || []), entry]
+        } : u);
+
+        currentSession.todayPlans = (currentSession.todayPlans || 0) + 1;
+        currentSession.gpsLogs = [...(currentSession.gpsLogs || []), entry];
+        saveDB();
+        loadWorkspace(currentSession);
+        alert(`Location Verified! Total Plans: ${currentSession.todayPlans}`);
+      }, () => alert("Location allow karein!"));
+    }
+
+    function renderProspects() {
+      const list = document.getElementById("member-prospects-list");
+      list.innerHTML = "";
+      (currentSession.prospects || []).forEach(lead => {
+        const div = document.createElement("div");
+        div.className = "p-2 rounded-xl glass-box flex items-center justify-between";
+        div.innerHTML = `
+          <div><strong>${lead.name}</strong> (${lead.city || 'Local'})</div>
+          <a href="https://wa.me/91${lead.phone}?text=Namaste%20${encodeURIComponent(lead.name)}" target="_blank" class="px-2 py-1 bg-emerald-600/20 text-emerald-300 rounded font-bold">WhatsApp</a>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function memberShareReportWhatsApp() {
+      const admin = users.find(u => u.role === "admin");
+      const msg = `*Daily Report: ${currentSession.name}*\nPlans: ${currentSession.todayPlans || 0}\nFollow-ups: ${currentSession.todayFollowups || 0}\nDD: ₹${currentSession.todayDD || 0}\nBV: ${currentSession.bv || 0} BV\nNotes: ${currentSession.todayNotes || 'None'}`;
+      window.open(`https://wa.me/91${admin ? admin.phone : ''}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function requestReportOTP() {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      systemConfig.activeOTP = code;
+      saveDB();
+      document.getElementById("otp-input-row").classList.remove("hidden");
+      alert("Admin panel par OTP request send ho gaya hai!");
+    }
+
+    function verifyReportOTP() {
+      const entered = document.getElementById("entered-otp").value.trim();
+      if (entered === systemConfig.activeOTP || !systemConfig.otpEnabled) {
+        document.getElementById("otp-lock-screen").classList.add("hidden");
+        document.getElementById("otp-unlocked-screen").classList.remove("hidden");
+        const list = document.getElementById("member-gps-logs-list");
+        list.innerHTML = "";
+        (currentSession.gpsLogs || []).forEach(g => {
+          const d = document.createElement("div");
+          d.className = "p-1.5 rounded glass-input flex justify-between";
+          d.innerHTML = `<span>${g.text}</span> <a href="${g.link}" target="_blank" class="text-blue-400 underline">Map Pin</a>`;
+          list.appendChild(d);
+        });
+      } else alert("Galat OTP!");
+    }
+
+    function exportVisitingCardJPG() {
+      html2canvas(document.getElementById("visiting-card-canvas"), { backgroundColor: '#070b14', scale: 2 }).then(cv => {
+        const a = document.createElement("a");
+        a.download = `${currentSession.name}_Visiting_Card.jpg`;
+        a.href = cv.toDataURL("image/jpeg", 0.95);
+        a.click();
+      });
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
